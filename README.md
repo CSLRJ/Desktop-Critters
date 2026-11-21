@@ -13,6 +13,17 @@
 [下载 Desktop Critters v1.0.0](https://github.com/CSLRJ/Desktop-Critters/releases/tag/v1.0.0)
 
 ---
+### 软件截图
+
+**右键菜单与皮肤切换**
+
+![右键菜单](screenshots/右键菜单-skin.png)
+
+**配置界面**
+
+![配置界面](screenshots/配置.png)
+
+---
 
 ## 简体中文
 
