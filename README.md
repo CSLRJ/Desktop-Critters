@@ -10,6 +10,8 @@
 **语言 / Language:** [简体中文](#简体中文) | [English](#english)
 
 ---
+[下载 Desktop Critters v1.0.0](https://github.com/CSLRJ/Desktop-Critters/releases/tag/v1.0.0)
+---
 
 ## 简体中文
 
@@ -137,6 +139,58 @@ Windows 11 实测：
 感谢 GLM-V5.3-Flash 在开发过程中的辅助。
 
 ---
+
+## 📁 项目文件结构
+
+由于 GitHub 网页版上传文件数量有限，项目中的三个主要目录采用 ZIP 压缩包形式存放在仓库根目录。
+
+### 仓库中的实际结构
+
+```text
+Desktop-Critters/
+├── BUILD.gn
+├── BUILDING.md
+├── README.md
+├── README-upstream.md
+├── THIRD-PARTY-NOTICES.md
+├── build.ps1
+├── clang_format.sh
+├── license.txt
+│
+├── src.zip
+├── assets.zip
+└── 2023-icon-library.zip
+```
+
+### 解压后的完整项目结构
+
+下载源码后，请将三个 ZIP 压缩包分别解压到项目根目录。解压后应恢复为以下目录结构：
+
+```text
+Desktop-Critters/
+├── BUILD.gn
+├── BUILDING.md
+├── README.md
+├── README-upstream.md
+├── THIRD-PARTY-NOTICES.md
+├── build.ps1
+├── clang_format.sh
+├── license.txt
+│
+├── src/
+│   ├── ...
+│
+├── assets/
+│   ├── ...
+│
+└── 2023-icon-library/
+    ├── ...
+```
+
+**注意：** `src/`、`assets/` 和 `2023-icon-library/` 是项目原有的目录结构。请分别解压对应的 ZIP 文件，并保留这些目录名称及其内部层级，不要将文件平铺到项目根目录。
+
+完成解压后，即可按照 `BUILDING.md` 中的说明查看源码和进行编译。
+
 
 **Created by CSLRJ**
 
@@ -271,6 +325,59 @@ The project is provided free of charge. This does not mean that all third-party 
 Special thanks to Alex313031, the original developer of Neko-ng, and eliot-akira, along with the creators of the animated and icon assets used in this project.
 
 Thanks also to GLM-V5.3-Flash for its assistance throughout the development process.
+
+---
+
+## 📁 Project Structure
+
+Due to the file upload limit of the GitHub web interface, the three main project directories are stored as ZIP archives in the repository root.
+
+### Repository Layout
+
+```text
+Desktop-Critters/
+├── BUILD.gn
+├── BUILDING.md
+├── README.md
+├── README-upstream.md
+├── THIRD-PARTY-NOTICES.md
+├── build.ps1
+├── clang_format.sh
+├── license.txt
+│
+├── src.zip
+├── assets.zip
+└── 2023-icon-library.zip
+```
+
+### Complete Project Structure After Extraction
+
+After downloading the source code, extract all three ZIP archives into the project root directory. The original directory structure should be restored as follows:
+
+```text
+Desktop-Critters/
+├── BUILD.gn
+├── BUILDING.md
+├── README.md
+├── README-upstream.md
+├── THIRD-PARTY-NOTICES.md
+├── build.ps1
+├── clang_format.sh
+├── license.txt
+│
+├── src/
+│   ├── ...
+│
+├── assets/
+│   ├── ...
+│
+└── 2023-icon-library/
+    ├── ...
+```
+
+**Note:** `src/`, `assets/`, and `2023-icon-library/` are the original project directories. Extract each corresponding ZIP archive separately and preserve the original directory names and internal folder hierarchy. Do not flatten their contents into the project root.
+
+Once extraction is complete, you can browse the source code and build the project by following the instructions in `BUILDING.md`.
 
 ---
 
