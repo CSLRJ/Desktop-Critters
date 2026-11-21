@@ -1,4 +1,3 @@
-
 # 🐾 Desktop Critters
 
 ### Little Friends on Your Desktop
@@ -10,7 +9,9 @@
 **语言 / Language:** [简体中文](#简体中文) | [English](#english)
 
 ---
+
 [下载 Desktop Critters v1.0.0](https://github.com/CSLRJ/Desktop-Critters/releases/tag/v1.0.0)
+
 ---
 
 ## 简体中文
@@ -101,16 +102,16 @@ Windows 11 实测：
 | 文件 | 体积 | 用途 |
 |---|---:|---|
 | `Desktop_Critters.exe` | 约 11.1 MB | 桌面宠物主程序 |
-| `Desktop_Critters_CFG.exe` | 约 301 KB | 配置程序 |
+| `NekoCFG.exe` | 约 301 KB | 配置程序 |
 
 主程序体积较大，主要是因为内置了 76 套动画皮肤。
 
 ## 🚀 使用方法
 
-1. 将 `Desktop_Critters.exe` 和 `Desktop_Critters_CFG.exe` 放在同一目录。
+1. 将 `Desktop_Critters.exe` 和 `NekoCFG.exe` 放在同一目录。
 2. 双击运行 `Desktop_Critters.exe`。
 3. 右键点击宠物，可以切换皮肤、调整大小、暂停或恢复活动，以及退出程序。
-4. 运行 `Desktop_Critters_CFG.exe` 可以修改其他配置。
+4. 运行 `NekoCFG.exe` 可以修改其他配置。
 
 ## 🔒 便携与隐私
 
@@ -190,7 +191,6 @@ Desktop-Critters/
 **注意：** `src/`、`assets/` 和 `2023-icon-library/` 是项目原有的目录结构。请分别解压对应的 ZIP 文件，并保留这些目录名称及其内部层级，不要将文件平铺到项目根目录。
 
 完成解压后，即可按照 `BUILDING.md` 中的说明查看源码和进行编译。
-
 
 **Created by CSLRJ**
 
@@ -288,16 +288,16 @@ Shared caching between multiple pets, repeated skin switching, and resource rele
 | File | Size | Description |
 |---|---:|---|
 | `Desktop_Critters.exe` | Approx. 11.1 MB | Main desktop pet application |
-| `Desktop_Critters_CFG.exe` | Approx. 301 KB | Configuration utility |
+| `NekoCFG.exe` | Approx. 301 KB | Configuration utility |
 
 The main executable is relatively large because it contains all 76 animated skins.
 
 ## 🚀 How to Use
 
-1. Place `Desktop_Critters.exe` and `Desktop_Critters_CFG.exe` in the same directory.
+1. Place `Desktop_Critters.exe` and `NekoCFG.exe` in the same directory.
 2. Double-click `Desktop_Critters.exe` to launch the desktop pets.
 3. Right-click a pet to switch its skin, adjust its size, pause or resume its activity, or exit the application.
-4. Run `Desktop_Critters_CFG.exe` to modify additional settings.
+4. Run `NekoCFG.exe` to modify additional settings.
 
 ## 🔒 Portability & Privacy
 
