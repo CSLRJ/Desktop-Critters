@@ -10,7 +10,7 @@
 
 ---
 
-[下载 Desktop Critters v1.0.1](https://github.com/CSLRJ/Desktop-Critters/releases/tag/v1.0.1)
+[下载最新版本](https://github.com/CSLRJ/Desktop-Critters/releases/latest)
 
 ---
 
