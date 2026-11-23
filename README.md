@@ -10,7 +10,7 @@
 
 ---
 
-[下载最新版本](https://github.com/CSLRJ/Desktop-Critters/releases/latest)
+[下载最新版本 Download Latest Version](https://github.com/CSLRJ/Desktop-Critters/releases/latest)
 
 ---
 
