@@ -10,9 +10,10 @@
 
 ---
 
-[下载 Desktop Critters v1.0.0](https://github.com/CSLRJ/Desktop-Critters/releases/tag/v1.0.0)
+[下载 Desktop Critters v1.0.1](https://github.com/CSLRJ/Desktop-Critters/releases/tag/v1.0.1)
 
 ---
+
 ### 软件截图
 
 **右键菜单与皮肤切换**
@@ -31,7 +32,7 @@
 
 **Desktop Critters** 基于开源项目 Neko-ng 改造和扩展。
 
-你可以在桌面上同时拥有多只宠物。它们能够追逐鼠标、自由移动、被拖动后坠落，也可以随时更换外观。
+你可以在桌面上同时拥有多只宠物。它们能够追逐鼠标、自由移动、被拖动后坠落，也可以随时更换外观。每只宠物都可以独立选择自己的皮肤。
 
 项目保留了经典桌面宠物的简单乐趣，并在皮肤数量、物理效果、兼容性和资源管理方面进行了扩展。
 
@@ -41,12 +42,13 @@
 |---|---|
 | 动画皮肤 | 共 76 套，每套 32 帧 |
 | 多宠物 | 支持多只宠物同时活动 |
-| 皮肤切换 | 通过右键菜单即时切换 |
+| 独立换肤 | 每只宠物可以单独切换皮肤 |
+| 皮肤保存 | 每只宠物的皮肤选择独立保存 |
 | 物理效果 | 拖动、重力坠落、坐定姿态和落地反弹 |
 | 其他操作 | 调整大小、暂停、恢复和退出 |
 | 配置管理 | 通过独立配置程序修改设置 |
 
-所有皮肤均嵌入主程序，无需额外下载或安装素材文件。
+所有皮肤均嵌入主程序，无需额外下载或安装素材文件。多只宠物使用相同皮肤时，可以共享缓存资源。
 
 ## 🛠️ 项目来源与制作
 
@@ -76,53 +78,53 @@ Desktop Critters 基于 [Alex313031/Neko-ng](https://github.com/Alex313031/neko-
 - 保留并修复原有 Neko 和 Penguin 皮肤。
 - 整合 74 套动画皮肤，最终共计 76 套。
 - 新增 DPI 自动适配，支持手动缩放。
-- 支持多只宠物同时活动，可分别使用不同皮肤。
+- 支持多只宠物同时活动，每只宠物可以使用不同皮肤。
+- 支持每只宠物独立保存皮肤设置，并在下次启动时恢复。
 - 新增拖动后的重力坠落动画，加入落地反弹效果。
 - 优化皮肤按需加载和多宠物共享缓存。
 - 将设置保存位置从注册表改为程序同目录下的 `config.ini` 文件。
+- 修复窗口区域设置失败路径中的 GDI 资源释放问题。
+- 移除旧版脚印效果及其相关配置和资源。
 
 ## 💻 兼容性与运行表现
 
-已在以下系统验证：
+**目标系统：**
 
 - Windows XP SP3（32 位）
 - Windows 11
 
-使用 Win32 / x86 编译和静态运行库，无需额外安装 Visual C++ 运行库。
+程序使用 Win32 / x86 编译和静态运行库，无需额外安装 Visual C++ 运行库。
+
+Windows XP SP3 是本项目的兼容性目标。不同系统版本上的实际运行表现可能有所差异。
 
 ### 内存表现
 
-Windows 11 实测：
+程序内置 76 套动画皮肤，采用按需加载和多宠物共享缓存机制。
 
-| 指标 | 实测表现 |
-|---|---:|
-| 工作集（Working Set） | 约 1～2 MB |
-| 专用工作集（Private Working Set） | 约 1～2 MB |
-| 提交大小（Commit Size） | 20 多 MB |
+实际内存使用会受到 Windows 版本、宠物数量、皮肤切换、资源访问和系统内存管理机制等因素影响。
 
-**关于内存指标：**
+需要注意，工作集（Working Set）和提交大小（Commit Size）代表不同的内存指标。工作集会随系统内存管理动态波动，提交大小则反映进程已提交的内存，并不意味着这些内存全部驻留在物理 RAM 中。
 
-- **工作集（Working Set）：** 当前驻留在物理 RAM 中的进程内存。
-- **专用工作集（Private Working Set）：** 工作集中由该进程独占的部分。
-- **提交大小（Commit Size）：** 已提交的虚拟内存，需要由系统的 RAM 或页面文件提供后备保障，不代表这些内存当前全部驻留在物理 RAM 中。
-
-提交大小会在首次切换皮肤时出现一次性增长，后续连续切换没有持续增长。工作集和专用工作集则保持在较低水平。多宠物共享缓存、皮肤连续切换和资源释放均已进行验证。
+本项目主要关注资源管理和长期运行稳定性，不以某一时刻的最低内存数值作为优化目标。
 
 ### 📦 程序文件
 
 | 文件 | 体积 | 用途 |
 |---|---:|---|
-| `Desktop_Critters.exe` | 约 11.1 MB | 桌面宠物主程序 |
-| `NekoCFG.exe` | 约 301 KB | 配置程序 |
+| `Desktop_Critters.exe` | 约 10.84 MB | 桌面宠物主程序 |
+| `Desktop_Critters_CFG.exe` | 约 0.29 MB | 配置程序 |
 
 主程序体积较大，主要是因为内置了 76 套动画皮肤。
 
 ## 🚀 使用方法
 
-1. 将 `Desktop_Critters.exe` 和 `NekoCFG.exe` 放在同一目录。
-2. 双击运行 `Desktop_Critters.exe`。
-3. 右键点击宠物，可以切换皮肤、调整大小、暂停或恢复活动，以及退出程序。
-4. 运行 `NekoCFG.exe` 可以修改其他配置。
+1. 下载便携版 ZIP 压缩包并解压。
+2. 将 `Desktop_Critters.exe`、`Desktop_Critters_CFG.exe` 和 `config.ini` 保持在同一目录。
+3. 双击运行 `Desktop_Critters.exe`。
+4. 右键点击某只宠物，可以切换该宠物的皮肤、调整大小、暂停或恢复活动，以及退出程序。
+5. 运行 `Desktop_Critters_CFG.exe` 可以修改其他配置。
+
+首次运行时，程序使用内置默认设置。配置文件会在保存设置时自动写入内容。
 
 ## 🔒 便携与隐私
 
@@ -154,58 +156,63 @@ Windows 11 实测：
 
 ## 📁 项目文件结构
 
-由于 GitHub 网页版上传文件数量有限，项目中的三个主要目录采用 ZIP 压缩包形式存放在仓库根目录。
+项目源码按照实际工程结构整理，保留必要的源代码、资源文件、Visual Studio 工程文件和构建文档。
 
 ### 仓库中的实际结构
 
 ```text
 Desktop-Critters/
-├── BUILD.gn
+├── .gitattributes
+├── .gitignore
 ├── BUILDING.md
 ├── README.md
-├── README-upstream.md
+├── SOURCE_CODE_GUIDE.txt
 ├── THIRD-PARTY-NOTICES.md
 ├── build.ps1
-├── clang_format.sh
 ├── license.txt
 │
-├── src.zip
-├── assets.zip
-└── 2023-icon-library.zip
+└── src/
+    ├── NekoCFG/
+    ├── res/
+    ├── Neko98.sln
+    ├── Neko98.vcxproj
+    ├── Neko98.vcxproj.filters
+    └── 主程序源码及其他必要工程文件
 ```
 
-### 解压后的完整项目结构
+### 源码目录说明
 
-下载源码后，请将三个 ZIP 压缩包分别解压到项目根目录。解压后应恢复为以下目录结构：
+- `src/`：程序源代码、Visual Studio 工程文件及资源。
+- `src/NekoCFG/`：独立配置程序的源码和工程文件。
+- `src/res/`：动画皮肤、图标及其他程序资源，包含 76 套皮肤，每套 32 帧。
+- `BUILDING.md`：编译环境、构建方法和部署说明。
+- `SOURCE_CODE_GUIDE.txt`：源码结构、主要类和关键功能的维护指南。
+- `build.ps1`：自动编译及便携版部署脚本。
+- `THIRD-PARTY-NOTICES.md`：第三方版权声明。
+- `license.txt`：原始许可证文件。
+
+### 编译与部署
+
+下载完整源码后，按照 `BUILDING.md` 中的说明配置编译环境。
+
+运行根目录中的 `build.ps1`，即可执行自动编译和便携版部署。
+
+编译成功后，程序会部署到 `DC_portable/` 目录，其中包含：
 
 ```text
-Desktop-Critters/
-├── BUILD.gn
-├── BUILDING.md
-├── README.md
-├── README-upstream.md
-├── THIRD-PARTY-NOTICES.md
-├── build.ps1
-├── clang_format.sh
-├── license.txt
-│
-├── src/
-│   ├── ...
-│
-├── assets/
-│   ├── ...
-│
-└── 2023-icon-library/
-    ├── ...
+DC_portable/
+├── Desktop_Critters.exe
+├── Desktop_Critters_CFG.exe
+└── config.ini
 ```
 
-**注意：** `src/`、`assets/` 和 `2023-icon-library/` 是项目原有的目录结构。请分别解压对应的 ZIP 文件，并保留这些目录名称及其内部层级，不要将文件平铺到项目根目录。
+`DC_portable/` 是构建时生成的便携版目录，不属于必须提交到源码仓库的源代码文件。
 
-完成解压后，即可按照 `BUILDING.md` 中的说明查看源码和进行编译。
+---
 
 **Created by CSLRJ**
 
-2026年11月21日
+2026年11月23日
 
 ---
 
@@ -215,7 +222,7 @@ Desktop-Critters/
 
 **Desktop Critters** is an enhanced and extended version based on the open-source project Neko-ng.
 
-You can have multiple little pets living on your desktop at the same time. They can chase your mouse cursor, move around freely, be dragged and dropped, and fall under gravity. You can also change their appearance whenever you like.
+You can have multiple little pets living on your desktop at the same time. They can chase your mouse cursor, move around freely, be dragged and dropped, and fall under gravity. Each pet can independently select its own skin.
 
 The project preserves the simple charm of classic desktop pets while extending its skin collection, physical interactions, compatibility, and resource management.
 
@@ -225,12 +232,13 @@ The project preserves the simple charm of classic desktop pets while extending i
 |---|---|
 | Animated skins | 76 skins, with 32 frames per skin |
 | Multiple pets | Multiple pets can be active simultaneously |
-| Skin selection | Switch skins instantly through the right-click menu |
+| Independent skins | Each pet can select its own skin |
+| Persistent settings | Each pet's skin selection is saved independently |
 | Physics effects | Dragging, gravity-based falling, sitting animations, and landing bounce |
 | Other controls | Resize, pause, resume, and exit |
 | Configuration | Modify settings through a separate configuration utility |
 
-All skins are embedded in the main executable. No additional skin files or downloads are required.
+All skins are embedded in the main executable. No additional skin files or downloads are required. Pets using the same skin can share cached resources.
 
 ## 🛠️ Project Origins & Development
 
@@ -261,54 +269,52 @@ This project is not an official release of Neko-ng and is independently maintain
 - Integrated 74 additional animated skins, bringing the total to 76.
 - Added automatic DPI scaling and manual size adjustment.
 - Added support for multiple pets, each with its own skin.
+- Added independent skin settings for each pet, restored on the next launch.
 - Added gravity-based falling animations after dragging, including a landing bounce effect.
 - Optimized on-demand skin loading and shared caching between pets.
 - Replaced registry-based settings storage with a `config.ini` file in the application directory.
+- Fixed a GDI resource handling issue in the window-region update failure path.
+- Removed the legacy footprint effect and its related configuration and resources.
 
 ## 💻 Compatibility & Performance
 
-Tested on the following operating systems:
+**Target operating systems:**
 
 - Windows XP SP3 (32-bit)
 - Windows 11
 
 The application is built for Win32 / x86 and uses the static runtime library, so no additional Visual C++ runtime installation is required.
 
+Windows XP SP3 is a compatibility target. Actual runtime behavior may vary across operating system versions.
+
 ### Memory Usage
 
-Measured on Windows 11:
+The application embeds all 76 animated skins and uses on-demand loading and shared caching between pets.
 
-| Metric | Observed Usage |
-|---|---:|
-| Working Set | Approximately 1–2 MB |
-| Private Working Set | Approximately 1–2 MB |
-| Commit Size | A little over 20 MB |
+Actual memory usage depends on factors such as the Windows version, number of pets, skin switching, resource access, and system memory management.
 
-**Understanding the memory metrics:**
+Working Set and Commit Size represent different memory metrics. Working Set fluctuates dynamically with system memory management, while Commit Size represents memory committed by the process and does not mean that all of it is currently resident in physical RAM.
 
-- **Working Set:** The amount of process memory currently resident in physical RAM.
-- **Private Working Set:** The portion of the working set that is private to the process.
-- **Commit Size:** The amount of virtual memory committed by the process, which must be backed by system RAM or the page file. It does not mean that all of this memory is currently resident in physical RAM.
-
-Commit Size increases once during the initial skin switch, but does not continue growing with repeated switches. Working Set and Private Working Set remain relatively low.
-
-Shared caching between multiple pets, repeated skin switching, and resource release have all been tested.
+The project focuses on resource management and long-term stability rather than minimizing memory figures at a particular moment.
 
 ### 📦 Included Applications
 
-| File | Size | Description |
+| File | Approx. Size | Description |
 |---|---:|---|
-| `Desktop_Critters.exe` | Approx. 11.1 MB | Main desktop pet application |
-| `NekoCFG.exe` | Approx. 301 KB | Configuration utility |
+| `Desktop_Critters.exe` | 10.84 MB | Main desktop pet application |
+| `Desktop_Critters_CFG.exe` | 0.29 MB | Configuration utility |
 
 The main executable is relatively large because it contains all 76 animated skins.
 
 ## 🚀 How to Use
 
-1. Place `Desktop_Critters.exe` and `NekoCFG.exe` in the same directory.
-2. Double-click `Desktop_Critters.exe` to launch the desktop pets.
-3. Right-click a pet to switch its skin, adjust its size, pause or resume its activity, or exit the application.
-4. Run `NekoCFG.exe` to modify additional settings.
+1. Download and extract the portable ZIP archive.
+2. Keep `Desktop_Critters.exe`, `Desktop_Critters_CFG.exe`, and `config.ini` in the same directory.
+3. Double-click `Desktop_Critters.exe` to launch the desktop pets.
+4. Right-click a pet to switch its skin, adjust its size, pause or resume its activity, or exit the application.
+5. Run `Desktop_Critters_CFG.exe` to modify additional settings.
+
+On first launch, the application uses built-in defaults. The configuration file is automatically populated when settings are saved.
 
 ## 🔒 Portability & Privacy
 
@@ -341,57 +347,60 @@ Thanks also to GLM-V5.3-Flash for its assistance throughout the development proc
 
 ## 📁 Project Structure
 
-Due to the file upload limit of the GitHub web interface, the three main project directories are stored as ZIP archives in the repository root.
+The source code is organized using the actual project structure, retaining the necessary source files, resources, Visual Studio project files, and build documentation.
 
 ### Repository Layout
 
 ```text
 Desktop-Critters/
-├── BUILD.gn
+├── .gitattributes
+├── .gitignore
 ├── BUILDING.md
 ├── README.md
-├── README-upstream.md
+├── SOURCE_CODE_GUIDE.txt
 ├── THIRD-PARTY-NOTICES.md
 ├── build.ps1
-├── clang_format.sh
 ├── license.txt
 │
-├── src.zip
-├── assets.zip
-└── 2023-icon-library.zip
+└── src/
+    ├── NekoCFG/
+    ├── res/
+    ├── Neko98.sln
+    ├── Neko98.vcxproj
+    ├── Neko98.vcxproj.filters
+    └── Main source files and other required project files
 ```
 
-### Complete Project Structure After Extraction
+### Source Directory Overview
 
-After downloading the source code, extract all three ZIP archives into the project root directory. The original directory structure should be restored as follows:
+- `src/`: Application source code, Visual Studio project files, and resources.
+- `src/NekoCFG/`: Source code and project files for the configuration utility.
+- `src/res/`: Animated skins, icons, and other application resources. Contains 76 skins, with 32 frames per skin.
+- `BUILDING.md`: Build environment, compilation, and deployment instructions.
+- `SOURCE_CODE_GUIDE.txt`: Source structure, major classes, and maintenance guidance.
+- `build.ps1`: Automated build and portable deployment script.
+- `THIRD-PARTY-NOTICES.md`: Third-party copyright notices.
+- `license.txt`: Original license file.
+
+### Building & Deployment
+
+After downloading the complete source code, follow the instructions in `BUILDING.md` to configure the build environment.
+
+Run `build.ps1` from the project root directory to compile and deploy the portable application.
+
+After a successful build, the application will be deployed to `DC_portable/`, containing:
 
 ```text
-Desktop-Critters/
-├── BUILD.gn
-├── BUILDING.md
-├── README.md
-├── README-upstream.md
-├── THIRD-PARTY-NOTICES.md
-├── build.ps1
-├── clang_format.sh
-├── license.txt
-│
-├── src/
-│   ├── ...
-│
-├── assets/
-│   ├── ...
-│
-└── 2023-icon-library/
-    ├── ...
+DC_portable/
+├── Desktop_Critters.exe
+├── Desktop_Critters_CFG.exe
+└── config.ini
 ```
 
-**Note:** `src/`, `assets/`, and `2023-icon-library/` are the original project directories. Extract each corresponding ZIP archive separately and preserve the original directory names and internal folder hierarchy. Do not flatten their contents into the project root.
-
-Once extraction is complete, you can browse the source code and build the project by following the instructions in `BUILDING.md`.
+`DC_portable/` is generated during the build process and does not need to be included in the source code repository.
 
 ---
 
 **Created by CSLRJ**
 
-November 21, 2026
+November 23, 2026

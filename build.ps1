@@ -261,6 +261,151 @@ foreach ($Directory in $OutputDirectories) {
     }
 }
 
+# ============================================================
+# 8. Deploy portable version to DC_portable
+# ============================================================
+
+$PetSourceExe    = Join-Path $Root 'src\Release\NekoPet.exe'
+$ConfigSourceExe = Join-Path $Root 'src\NekoCFG\Release\NekoCFG.exe'
+$PortableDir     = Join-Path $Root 'DC_portable'
+
+Write-Host ''
+Write-Host '----------------------------------------' -ForegroundColor Cyan
+Write-Host 'Deploying portable version' -ForegroundColor Cyan
+Write-Host '----------------------------------------' -ForegroundColor Cyan
+
+# 8.1 Both build outputs must exist and be non-empty
+
+foreach ($Artifact in @(
+    @{ Path = $PetSourceExe;    Name = 'NekoPet.exe' },
+    @{ Path = $ConfigSourceExe; Name = 'NekoCFG.exe' }
+)) {
+
+    if (-not (Test-Path $Artifact.Path -PathType Leaf)) {
+
+        Write-Host ''
+        Write-Host "ERROR: Build output missing: $($Artifact.Name)" -ForegroundColor Red
+        Write-Host $Artifact.Path -ForegroundColor Red
+
+        exit 10
+    }
+
+    if ((Get-Item $Artifact.Path).Length -le 0) {
+
+        Write-Host ''
+        Write-Host "ERROR: Build output is empty: $($Artifact.Name)" -ForegroundColor Red
+        Write-Host $Artifact.Path -ForegroundColor Red
+
+        exit 10
+    }
+}
+
+# 8.2 Create the portable directory. Existing content is never wiped.
+
+if (-not (Test-Path $PortableDir -PathType Container)) {
+    New-Item -ItemType Directory -Path $PortableDir | Out-Null
+}
+
+# 8.3 The portable directory must not contain unexpected items.
+#     If it does, stop WITHOUT deleting anything and let the user
+#     clean it up manually.
+
+$ExpectedNames = @('Desktop_Critters.exe', 'Desktop_Critters_CFG.exe', 'config.ini')
+
+$Unexpected = Get-ChildItem -Path $PortableDir -Force |
+    Where-Object { ($_.PSIsContainer) -or ($ExpectedNames -notcontains $_.Name) }
+
+if ($Unexpected) {
+
+    Write-Host ''
+    Write-Host 'ERROR: DC_portable contains unexpected items.' -ForegroundColor Red
+    Write-Host 'Deployment stopped. Nothing was deleted:' -ForegroundColor Red
+
+    foreach ($Item in $Unexpected) {
+        Write-Host "  $($Item.Name)" -ForegroundColor Red
+    }
+
+    exit 11
+}
+
+# 8.4 Copy and rename the two executables, then verify them
+
+$PortablePetExe    = Join-Path $PortableDir 'Desktop_Critters.exe'
+$PortableConfigExe = Join-Path $PortableDir 'Desktop_Critters_CFG.exe'
+
+Copy-Item -Path $PetSourceExe    -Destination $PortablePetExe    -Force
+Copy-Item -Path $ConfigSourceExe -Destination $PortableConfigExe -Force
+
+foreach ($Artifact in @(
+    @{ Path = $PortablePetExe;    Name = 'Desktop_Critters.exe' },
+    @{ Path = $PortableConfigExe; Name = 'Desktop_Critters_CFG.exe' }
+)) {
+
+    if (-not (Test-Path $Artifact.Path -PathType Leaf) -or
+        (Get-Item $Artifact.Path).Length -le 0) {
+
+        Write-Host ''
+        Write-Host "ERROR: Deployment failed for $($Artifact.Name)" -ForegroundColor Red
+        Write-Host $Artifact.Path -ForegroundColor Red
+
+        exit 12
+    }
+}
+
+# 8.5 config.ini protection.
+#     An existing file is NEVER overwritten or modified.
+#     The repository ships no config.ini template. Both programs
+#     are verified to handle a missing or empty config.ini safely
+#     (every key falls back to its built-in default and the file is
+#     created on first save), so an EMPTY config.ini is created only
+#     when none exists.
+
+$PortableIni = Join-Path $PortableDir 'config.ini'
+
+if (Test-Path $PortableIni -PathType Leaf) {
+
+    Write-Host '  Existing config.ini preserved untouched.' -ForegroundColor Green
+}
+else {
+
+    Write-Host '  config.ini not found - creating an empty one (built-in defaults).' -ForegroundColor Yellow
+    New-Item -ItemType File -Path $PortableIni | Out-Null
+
+    if (-not (Test-Path $PortableIni -PathType Leaf)) {
+
+        Write-Host ''
+        Write-Host 'ERROR: Could not create config.ini' -ForegroundColor Red
+        Write-Host $PortableIni -ForegroundColor Red
+
+        exit 13
+    }
+}
+
+# 8.6 Remove the original build output directories.
+#     Only reached after the full deployment succeeded. The next
+#     build recreates everything because /t:Rebuild is used.
+
+try {
+
+    Remove-Item -Path (Join-Path $Root 'src\Release') -Recurse -Force
+    Remove-Item -Path (Join-Path $Root 'src\NekoCFG\Release') -Recurse -Force
+
+    Write-Host '  Original build output directories removed.' -ForegroundColor Green
+}
+catch {
+
+    Write-Host ''
+    Write-Host 'ERROR: Could not remove the original build output directories:' -ForegroundColor Red
+    Write-Host $_.Exception.Message -ForegroundColor Red
+    Write-Host 'Deployment itself succeeded; clean them up manually and rebuild.' -ForegroundColor Red
+
+    exit 14
+}
+
+Write-Host ''
+Write-Host '[OK] Portable deployment complete.' -ForegroundColor Green
+Write-Host "     $PortableDir"
+
 Write-Host ''
 Write-Host '========================================' -ForegroundColor Green
 Write-Host '       ALL BUILDS SUCCEEDED' -ForegroundColor Green

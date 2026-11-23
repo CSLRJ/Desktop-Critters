@@ -1,0 +1,281 @@
+================================================================
+ Desktop Critters - Source Code Guide
+================================================================
+
+This file describes the final source tree and the mechanisms of
+the two programs. It is written for future maintenance, including
+AI-assisted changes.
+
+BEFORE ANY CHANGE:
+  1. Read README.md and this file first.
+  2. Prefer the smallest possible change. Do not refactor, do not
+     reformat code, do not "improve" unrelated code.
+  3. When in doubt, keep the existing behaviour and ask - never
+     guess. Files whose status is unclear are kept, not deleted.
+
+----------------------------------------------------------------
+1. Project structure
+----------------------------------------------------------------
+
+Root directory
+  build.ps1                  One-click build + deployment script (see 8)
+  README.md                  Project readme (must NOT be modified)
+  BUILDING.md                Build instructions
+  SOURCE_CODE_GUIDE.txt      This file
+  THIRD-PARTY-NOTICES.md     Third-party notices (keep)
+  license.txt                License (keep)
+  .gitignore / .gitattributes  VCS settings (keep)
+
+src\                        Main program (the desktop pet)
+  Neko98.sln                 Solution containing both projects
+  Neko98.vcxproj / .filters  Main project. Release|Win32 outputs
+                             .\Release\NekoPet.exe (TargetName = NekoPet)
+  Neko98.cpp / Neko98.h      Program entry point wWinMain, main window,
+                             timer, context menus, tray, multi-pet management
+  Neko.cpp / Neko.h          CNeko: pet behaviour state machine (19 states,
+                             STOP..FALL), animation control, gravity/bounce
+  Pet.cpp / Pet.h            CPet: base pet window (size, images, scale)
+  AlwaysOnTopPet.cpp / .h    CAlwaysOnTopPet : virtual public CPet:
+                             topmost layered window, drawing (Draw()),
+                             per-frame window regions
+  SkinCache.cpp / .h         Process-wide skin cache, reference counted (see 4)
+  Skins.h                    The one skin table shared by BOTH programs (see 5)
+  NekoSettings.cpp / .h      config.ini read/write, portable (see 6)
+  NekoCommon.h               Shared constants: szNekoCfgSection = L"Neko-ng",
+                             MAX_NEKO_NAME = 64, NEKO_MAX_CATS = 32,
+                             runtime DPI-awareness probe
+  Tray.cpp / Tray.h          CTray: taskbar notification icon + popup menu
+  framework.h                Common Windows includes
+  resource.h                 Main program resource IDs
+  version.h / Neko98.h       Version info and helper declarations
+  Neko95.rc                  Main resource script: every icon, skin frame,
+                             manifest, dialog and menu is embedded in the EXE
+  res\
+    skins\<name>\0..31.ico   74 skins from the 2023 icon library,
+                             32 frames each
+    cat2\*.ico               The "Penguin" skin, 32 frames
+    Awake.ico + 31 more ICOs Original Neko animation/state frames
+                             (skin 1 "Neko (cat)"; Awake.ico is also the
+                             tray icon IDI_AWAKE)
+    neko_win32.manifest      Main program manifest
+
+src\NekoCFG\                Configuration program
+  NekoCFG.vcxproj / .filters Config project. Release|Win32 outputs
+                             .\Release\NekoCFG.exe. It compiles
+                             ..\NekoSettings.cpp and includes
+                             ..\NekoCommon.h / ..\NekoSettings.h
+  NekoCFG.cpp / NekoCFG.h    Entry point wWinMain -> DialogBox(IDD_CONFIG)
+                             main configuration dialog; also "new pet"
+                             (IDD_NEWNEKO) and about (IDD_ABOUTBOX) dialogs
+  NekoCFG_Tabs.cpp           Property pages (Movement, Independence,
+                             Display, ...)
+  NekoCFG_resource.h / .hm   Config resource IDs and help-map header
+  NekoCFG.rc                 Config resource script
+  res\                       Config program icons and manifest
+                             (appicon, displayi, independence, movement,
+                             default, small, neko_cfg.manifest)
+
+Program entry points:
+  Main program    src\Neko98.cpp            wWinMain()
+  Config program  src\NekoCFG\NekoCFG.cpp   wWinMain()
+
+The projects compile to NekoPet.exe and NekoCFG.exe. The release
+names Desktop_Critters.exe / Desktop_Critters_CFG.exe are produced
+by build.ps1 (copy + rename, TargetName is never changed). The main
+program's ExecuteConfigProcess() looks for Desktop_Critters_CFG.exe
+first and falls back to NekoCFG.exe, so both names work.
+
+----------------------------------------------------------------
+2. Pet object lifetime and multi-pet management
+----------------------------------------------------------------
+
+- Neko98.cpp holds all pets in g_NekoArray (array of CNeko*) with
+  g_nNumCats entries.
+- LoadConfiguration():
+    1) reads the global INI section "Neko-ng" (taskbar icon etc.);
+    2) reads NumCats and the name index keys ("0","1",...);
+       names are validated (IsValidCatName) and de-duplicated;
+    3) deletes the old pets, then creates one new CNeko(name) per
+       valid name, capped at NEKO_MAX_CATS (32);
+    4) with no usable data it falls back to one anonymous default
+       pet CNeko();
+    5) adjusts the main loop delay g_dwSleepTime by pet count
+       (200 - 5*n for n <= 20).
+- A main-window timer (200 ms) drives Update() of every pet
+  (animation frames, movement, falling, bouncing).
+- Right-clicking a pet: ShowPetContextMenu() finds the clicked pet
+  pointer pNeko. Skin commands are dispatched to pNeko->SetSkin()
+  and affect ONLY that pet. Pause/quit remain global actions.
+- On exit / config reload every pet is delete'd in a loop.
+
+----------------------------------------------------------------
+3. Per-pet skin switching and the SkinCache
+----------------------------------------------------------------
+
+- A skin is identified by its index into kNekoSkins[] (Skins.h).
+  Each pet stores its own skin number in its own config section,
+  and it survives restarts.
+- SetSkin() / SetScalePercent() act on a single CNeko only.
+- SkinCache (SkinCache.h/.cpp), reference counted:
+    - SkinIconTable: the 32 HICONs of one skin, loaded from this
+      executable's resources on first use
+      (SkinCache_AcquireIcons / SkinCache_ReleaseIcons);
+    - SkinRegionSet: the 32 per-frame window regions (HRGN) of one
+      skin at ONE scale (SkinCache_AcquireRegions /
+      SkinCache_ReleaseRegions); different scales of the same skin
+      are separate sets chained via pNext;
+    - pets sharing a skin (and scale) share the same handles - no
+      copies are made;
+    - handles are destroyed when the last reference is released,
+      so switching skins never accumulates old skins;
+    - SkinCache_Shutdown() is the process-exit safety net;
+    - SkinCache_TrimWorkingSet() trims the working set after a
+      skin load (once decoded into GDI objects the resource pages
+      are not read again; they fault back on demand).
+- Every Acquire must be balanced by exactly one Release. Never
+  DestroyIcon or DeleteObject handles that the cache owns.
+
+----------------------------------------------------------------
+4. Skin resource embedding
+----------------------------------------------------------------
+
+- All skin ICOs are embedded in the EXE at build time via
+  Neko95.rc; nothing is loaded from disk at runtime:
+    - skin 1 "Neko (cat)": IDI_CAT1_FIRST = 101, 32 consecutive
+      IDs (ICO files directly under src\res\);
+    - skin 2 "Penguin": IDI_CAT2_FIRST = 143, 32 consecutive IDs
+      (src\res\cat2\);
+    - the other 74 skins: numeric IDs starting at 200, 32
+      consecutive IDs per skin, e.g.
+        200 ICON DISCARDABLE "res/skins/ace/0.ico"
+- NEKO_SKIN_FRAMES = 32 frames per skin. Frame order follows the
+  original oneko animation order documented at CNeko::LoadImages().
+- Skins.h (kNekoSkins[]) is the ONLY skin table and is shared by
+  the main program (menu, icon loading) and the config program
+  (Display page combo box). Resource IDs must stay identical in
+  both programs - any skin change must update Skins.h, resource.h
+  and Neko95.rc together.
+- All 76 skins x 32 frames must remain complete.
+
+----------------------------------------------------------------
+5. config.ini mechanism
+----------------------------------------------------------------
+
+- CNekoSettings (NekoSettings.cpp) locates config.ini next to the
+  executable via GetModuleFileNameW - portable storage, no
+  registry, independent of the current directory. Both programs
+  share the same file.
+- Keys "Neko-ng\<name>" map to INI sections: the global settings
+  use section "Neko-ng"; each named pet uses its own name section.
+- Reading: GetPrivateProfileStringW is called with an internal
+  sentinel default (NEKO_CFG_NOTFOUND). A missing key, a missing
+  file or an empty value are all reported as "not set" and the
+  caller keeps its built-in default. A missing or empty
+  config.ini is therefore completely safe.
+- Writing: WritePrivateProfileStringW creates the file
+  automatically on first save.
+- NekoCfgCleanupCorruptSections() sanitizes leftovers of older
+  builds (leaked sentinel text, control-character sections,
+  duplicate sections/keys). Healthy files keep their exact bytes.
+- The repository intentionally ships NO config.ini template. First
+  run uses built-in defaults; the file is generated when the user
+  saves settings. Never fabricate config content; every new key
+  must have a built-in default in code.
+
+----------------------------------------------------------------
+6. DPI and scaling
+----------------------------------------------------------------
+
+- DPI awareness: NekoCommon.h resolves "SetProcessDPIAware" at
+  runtime via GetProcAddress; on old user32 versions (XP) the
+  call is silently skipped. Do not convert this to a static
+  import.
+- Scaling: user scale is a percentage applied through
+  SetScalePercent(). Internally a float scale is passed to
+  SkinCache_AcquireRegions() to build per-frame regions at that
+  size; regions are cached per skin + scale.
+- Animation frames can have different outlines, so the window
+  region MUST be set per frame inside Draw(). Do not reduce it to
+  a call on skin change only.
+- Do not modify the DPI adaptation or the scaling algorithms.
+
+----------------------------------------------------------------
+7. GDI/USER resources and memory notes
+----------------------------------------------------------------
+
+- HRGN ownership rule: after SetWindowRgn() SUCCEEDS the region
+  belongs to the system and must never be deleted again; on
+  failure the caller must DeleteObject it. Draw() in
+  AlwaysOnTopPet.cpp implements exactly this.
+- HICONs are owned by SkinCache with reference counting.
+- Failure paths (region creation failed, null handles) must be as
+  clean as success paths.
+- Do NOT mask real leaks with periodic EmptyWorkingSet or forced
+  working-set clearing. The only intended trim is
+  SkinCache_TrimWorkingSet() after a skin load.
+- After changes, verify across skin switches, scale changes and
+  multi-pet operations that GDI/USER handle counts and commit
+  size do not grow continuously.
+
+----------------------------------------------------------------
+8. Build environment and build flow
+----------------------------------------------------------------
+
+- Toolchain (fixed, do not change): Visual Studio 2022 (or Build
+  Tools), platform toolset v141_xp, Windows 7.1A SDK,
+  Release|Win32, static runtime /MT. The binaries target
+  Windows XP SP3 (32-bit) as well as modern Windows - never call
+  an API that XP lacks; when unsure, load it dynamically.
+- One-click build: run .\build.ps1 in the repository root (see
+  BUILDING.md):
+    1) MSBuild is located via vswhere / common install paths;
+    2) both projects are built with /t:Rebuild, Release|Win32;
+    3) after BOTH projects succeed the portable deployment runs
+       (see 9).
+- Build outputs:
+    src\Release\NekoPet.exe           main program
+    src\NekoCFG\Release\NekoCFG.exe   config program
+- Deployed portable directory (root\DC_portable, exactly three
+  files):
+    Desktop_Critters.exe        copy of NekoPet.exe
+    Desktop_Critters_CFG.exe    copy of NekoCFG.exe
+    config.ini                  existing file is kept untouched;
+                                when missing, build.ps1 creates an
+                                empty one (safe - see section 5)
+
+----------------------------------------------------------------
+9. build.ps1 deployment and safety rules
+   (read before touching the script)
+----------------------------------------------------------------
+
+- Deployment runs only when BOTH projects built successfully; any
+  earlier failure exits non-zero and keeps the original outputs.
+- After copying, both EXEs are re-checked for existence and
+  size > 0.
+- DC_portable\config.ini is NEVER overwritten or modified. It is
+  created (empty) only if absent, which is verified safe.
+- DC_portable is never wiped. If it contains unexpected files or
+  subdirectories, the script reports them and STOPS without
+  deleting anything.
+- Only after the full deployment succeeds are src\Release and
+  src\NekoCFG\Release deleted. The next build recreates them
+  because the script uses /t:Rebuild.
+
+----------------------------------------------------------------
+10. Notes for future AI modifications
+----------------------------------------------------------------
+
+- Read README.md and this file first. README.md must not be
+  modified.
+- Smallest possible change: no drive-by refactoring, no style
+  changes, no opportunistic optimizations.
+- Skin changes touch Skins.h + resource.h + Neko95.rc together,
+  and both programs share Skins.h.
+- Config changes are shared by both programs through
+  NekoSettings / config.ini; key names and defaults must match.
+- Skin/cache changes must keep the SkinCache reference counts
+  balanced (one Release per Acquire).
+- XP compatibility is a hard constraint.
+- After any change, build for real with .\build.ps1. Never claim
+  success from static reading alone.
+- If unsure whether a file can be deleted, keep it.
