@@ -48,7 +48,7 @@
 | 多宠物 | 支持多只宠物同时活动 |
 | 独立换肤 | 每只宠物可以单独切换皮肤 |
 | 皮肤保存 | 每只宠物的皮肤选择独立保存 |
-| 物理效果 | 拖动、重力坠落、坐定姿态和落地反弹 |
+| 物理效果 | 拖动、重力坠落和落地反弹 |
 | 其他操作 | 调整大小、暂停、恢复和退出 |
 | 配置管理 | 通过独立配置程序修改设置 |
 
@@ -60,7 +60,7 @@ Desktop Critters 基于 [Alex313031/Neko-ng](https://github.com/Alex313031/neko-
 
 项目整合了 [eliot-akira/neko](https://github.com/eliot-akira/neko) 中 `2023-icon-library` 目录提供的 74 套动画素材，并保留 Neko-ng 原有的 Neko 和 Penguin 动画，最终形成 76 套皮肤。
 
-在原项目基础上，本项目进行了代码修改、功能扩展、资源整合和性能优化，逐步形成现在的 Desktop Critters。
+在原项目基础上，本项目主要完善了现代电脑的适配性，新增少量功能并改变了配置信息存储方式，逐步形成现在的 Desktop Critters。
 
 **开发者：** CSLRJ
 
@@ -80,6 +80,7 @@ Desktop Critters 基于 [Alex313031/Neko-ng](https://github.com/Alex313031/neko-
 ## ⚙️ 主要改进
 
 - 保留并修复原有 Neko 和 Penguin 皮肤。
+- 新增右键点击宠物实现皮肤、尺寸切换等功能
 - 整合 74 套动画皮肤，最终共计 76 套。
 - 新增 DPI 自动适配，支持手动缩放。
 - 支持多只宠物同时活动，每只宠物可以使用不同皮肤。
@@ -238,7 +239,7 @@ The project preserves the simple charm of classic desktop pets while extending i
 | Multiple pets | Multiple pets can be active simultaneously |
 | Independent skins | Each pet can select its own skin |
 | Persistent settings | Each pet's skin selection is saved independently |
-| Physics effects | Dragging, gravity-based falling, sitting animations, and landing bounce |
+| Physics effects | Dragging, gravity-based falling, and landing bounce |
 | Other controls | Resize, pause, resume, and exit |
 | Configuration | Modify settings through a separate configuration utility |
 
@@ -250,7 +251,7 @@ Desktop Critters is based on [Alex313031/Neko-ng](https://github.com/Alex313031/
 
 The project incorporates 74 sets of animated assets from the `2023-icon-library` directory in [eliot-akira/neko](https://github.com/eliot-akira/neko), while retaining the original Neko and Penguin animations from Neko-ng. This brings the total collection to 76 skins.
 
-Building upon the original project, I modified the source code, expanded its functionality, integrated additional resources, and optimized its performance to create Desktop Critters.
+Based on the original project, this version improves compatibility for modern PCs, adds a small set of new features, and changes how configuration data is stored, evolving into what is now Desktop Critters.
 
 **Developer:** CSLRJ
 
@@ -270,6 +271,7 @@ This project is not an official release of Neko-ng and is independently maintain
 ## ⚙️ Key Improvements
 
 - Preserved and repaired the original Neko and Penguin skins.
+- Added right-click on pet to switch skins, sizes and more.
 - Integrated 74 additional animated skins, bringing the total to 76.
 - Added automatic DPI scaling and manual size adjustment.
 - Added support for multiple pets, each with its own skin.
