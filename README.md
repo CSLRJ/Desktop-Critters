@@ -13,14 +13,18 @@
 [下载最新版本 Download Latest Version](https://github.com/CSLRJ/Desktop-Critters/releases/latest)
 
 ---
+## ⚠️⚠️⚠️ 注意事项 / Notice
+- 仓库的源代码可能年久失修，请在Release下载源代码。
+- The source code in the repository may be outdated. Please download the source code from Releases.
 
 ### 软件截图
 
-**右键菜单与皮肤切换**
+
+![使用效果1](screenshots/1.gif)
+
+![使用效果2](screenshots/2.gif)
 
 ![右键菜单](screenshots/右键菜单-skin.png)
-
-**配置界面**
 
 ![配置界面](screenshots/配置.png)
 
@@ -111,7 +115,7 @@ Windows XP SP3 是本项目的兼容性目标。不同系统版本上的实际�
 
 | 文件 | 体积 | 用途 |
 |---|---:|---|
-| `Desktop_Critters.exe` | 约 10.84 MB | 桌面宠物主程序 |
+| `Desktop_Critters.exe` | 约 11 MB | 桌面宠物主程序 |
 | `Desktop_Critters_CFG.exe` | 约 0.29 MB | 配置程序 |
 
 主程序体积较大，主要是因为内置了 76 套动画皮肤。
@@ -301,7 +305,7 @@ The project focuses on resource management and long-term stability rather than m
 
 | File | Approx. Size | Description |
 |---|---:|---|
-| `Desktop_Critters.exe` | 10.84 MB | Main desktop pet application |
+| `Desktop_Critters.exe` | 11 MB | Main desktop pet application |
 | `Desktop_Critters_CFG.exe` | 0.29 MB | Configuration utility |
 
 The main executable is relatively large because it contains all 76 animated skins.
